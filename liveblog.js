@@ -68,8 +68,8 @@ function classLiveBlog(id, rss){
                 newItemContainer = $("<div/>")
                     .attr("id", item.guid)
                     .hide()
-                    .append("<h3>"+item.title+"</h3>")
-                    .append($("<p/>"))
+                    .append("<div style=\"float:right; font-weight:bold;\">"+item.pubDate+"</div>")
+                    .append($('<div style="margin-left:20px; margin-bottom:0px; margin-top:5px; width:580px"/>'))
                     .append(item.content);
 
                 if( ! _localLB.containsId(item.guid)) {

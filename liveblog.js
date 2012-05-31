@@ -69,7 +69,7 @@ function classLiveBlog(id, rss){
                     .attr("id", item.guid)
                     .hide()
                     .append('<div style="float:right; font-weight:bold;">'+item.pubDate+'</div>')
-                    .append('<div style="margin-left:20px; margin-bottom:0px; margin-top:5px; width:580px"/>')
+                    .append('<div style="margin-left:20px; margin-bottom:0px; margin-top:5px; width:580px">')
                     .append(item.content)
                     .append('</div>');
 

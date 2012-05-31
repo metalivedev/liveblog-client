@@ -65,13 +65,14 @@ function classLiveBlog(id, rss){
                     author: $this.find("author").text(),
                     content: $this.find("encoded").text()
                 },
+                newDateContainer = $('<div style="float:right; font-weight:bold;"/>')
+                    .append(item.pubDate),
+                newContentContainer = $('<div style="margin-left:20px; margin-bottom:0px; margin-top:5px; width:580px"/>')
+                    .append(item.content),
                 newItemContainer = $("<div/>")
                     .attr("id", item.guid)
                     .hide()
-                    .append('<div style="float:right; font-weight:bold;">'+item.pubDate+'</div>')
-                    .append('<div style="margin-left:20px; margin-bottom:0px; margin-top:5px; width:580px">')
-                    .append(item.content)
-                    .append('</div>');
+                    .append(newDateContainer, newContentContainer);
 
                 if( ! _localLB.containsId(item.guid)) {
                     newItemContainer.insertAfter(lastItemId);

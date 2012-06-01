@@ -1,3 +1,4 @@
+// From https://github.com/metalivedev/liveblog-client
 function classLiveBlog(id, rss){
     // Target Element where liveblog stream will be inserted.
     this.targetId = id;
@@ -70,7 +71,7 @@ function classLiveBlog(id, rss){
 
                 if(0 >= item.content.length){
                     // Google Chrome and Safari seem to prefer this. 
-                    // XML tag is <content:enconded>
+                    // XML tag is <content:encoded>
                     item.content = $this.find("encoded").text()
                 }
 

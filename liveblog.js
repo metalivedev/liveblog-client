@@ -63,11 +63,18 @@ function classLiveBlog(id, rss){
                     description: $this.find("description").text(),
                     pubDate: $this.find("pubDate").text(),
                     author: $this.find("author").text(),
-                    content: $this.find("content\\:encoded").text()
+                    content: $this.find("content\\:encoded").text(),
                 },
                 newDateContainer = $('<div style="float:right; font-weight:bold;"/>')
-                    .append(item.pubDate),
-                newContentContainer = $('<div style="margin-left:20px; margin-bottom:0px; margin-top:5px; width:580px"/>')
+                    .append(item.pubDate);
+
+                if(0 >= item.content.length){
+                    // Google Chrome and Safari seem to prefer this. 
+                    // XML tag is <content:enconded>
+                    item.content = $this.find("encoded").text()
+                }
+
+                var newContentContainer = $('<div style="margin-left:20px; margin-bottom:0px; margin-top:5px; width:580px"/>')
                     .append(item.content),
                 newItemContainer = $("<div/>")
                     .attr("id", item.guid)

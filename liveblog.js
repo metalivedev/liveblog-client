@@ -52,7 +52,7 @@ function classLiveBlog(id, rss){
         // Record last modified time
         _localLB.lastMod = jqXHR.getResponseHeader('Last-Modified');
 
-        _pollEnd = Date.now();
+        _pollEnd = +new Date;
 
         $xml.find("item").each(
             function() {
@@ -92,7 +92,7 @@ function classLiveBlog(id, rss){
     }
 
     function _pollError(data, textStatus, errorThrown){
-        _pollEnd = Date.now();
+        _pollEnd = +new Date;
         console.warn("Poll Error: "+textStatus);
     }
 
@@ -117,7 +117,7 @@ function classLiveBlog(id, rss){
     
     // Get the live blog data once. Loop if we've started polling.
     this.poll = function(){
-        _pollStart = Date.now();
+        _pollStart = +new Date;
         $.ajax({
             url: _localLB.rssXml,
             dataType: "xml",

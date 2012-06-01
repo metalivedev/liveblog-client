@@ -25,10 +25,17 @@ function classLiveBlog(id, rss){
     // Otherwise "this" changes meaning within the anon function.
     var _localLB = this;
 
+    // Log only if there is a console.
+    function _log(msg) {
+        if(window.console&&window.console.log){
+            window.console.log(msg);
+        }
+    }
+
     // Calculate polling period based on latency and reschedule.
     // TODO: Calculate average latency over n samples instead.
     function _pollUpdatePeriod(jqXHR, status){
-        console.log("Poll Status:"+status);
+        _log("Poll Status:"+status);
 
         var latency = _pollEnd - _pollStart;
         if(latency > 0 && latency > _localLB.pollShort){
@@ -36,7 +43,7 @@ function classLiveBlog(id, rss){
             if(_localLB.pollLong < latency){
                 _localLB.pollLong = _LONGPOLL * latency;
             }
-            console.log("New Polling: short("+_localLB.pollShort+")");
+            _log("New Polling: short("+_localLB.pollShort+")");
         }
 
         // If we're still polling, reschedule for another poll.
@@ -93,7 +100,7 @@ function classLiveBlog(id, rss){
 
     function _pollError(data, textStatus, errorThrown){
         _pollEnd = +new Date;
-        console.warn("Poll Error: "+textStatus);
+        _log("Poll Error: "+textStatus);
     }
 
     // Check to see if this id is already in the document/page.
@@ -137,7 +144,7 @@ function classLiveBlog(id, rss){
             _pollPending.clear();
             _pollPending = undefined;
         }
-        console.log("Polling stopped.");
+        _log("Polling stopped.");
     };
 
     this.pollingStart = function(interval) {
@@ -148,7 +155,7 @@ function classLiveBlog(id, rss){
 
         _localLB.pollingStop();
         _pollPending = new LBTimeout(_localLB.poll, _localLB.pollShort);
-        console.log("Polling started: " + _pollPending.id);
+        _log("Polling started: " + _pollPending.id);
     }
 
     this.pollingToggle = function() {

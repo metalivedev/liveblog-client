@@ -63,7 +63,7 @@ function classLiveBlog(id, rss){
                     description: $this.find("description").text(),
                     pubDate: $this.find("pubDate").text(),
                     author: $this.find("author").text(),
-                    content: $this.find("encoded").text()
+                    content: $this.find("content\\:encoded").text()
                 },
                 newDateContainer = $('<div style="float:right; font-weight:bold;"/>')
                     .append(item.pubDate),

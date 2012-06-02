@@ -123,12 +123,15 @@ function classLiveBlog(id, rss){
     }
     
     // Get the live blog data once. Loop if we've started polling.
+    // Only check if modified if we *think* we've never loaded before.
+    // Trick: reloading the page doesn't purge the XML from cache, 
+    //        but it does clear lastMod.
     this.poll = function(){
         _pollStart = +new Date;
         $.ajax({
             url: _localLB.rssXml,
             dataType: "xml",
-            ifModified: true,
+            ifModified: (_localLB.lastMod)?true:false,
             success: _pollSuccess,
             error: _pollError,
             complete: _pollUpdatePeriod

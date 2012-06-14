@@ -1,3 +1,4 @@
+// From https://github.com/metalivedev/liveblog-client
 function classLiveBlog(id, rss){
     // Target Element where liveblog stream will be inserted.
     this.targetId = id;
@@ -24,10 +25,17 @@ function classLiveBlog(id, rss){
     // Otherwise "this" changes meaning within the anon function.
     var _localLB = this;
 
+    // Log only if there is a console.
+    function _log(msg) {
+        if(window.console&&window.console.log){
+            window.console.log(msg);
+        }
+    }
+
     // Calculate polling period based on latency and reschedule.
     // TODO: Calculate average latency over n samples instead.
     function _pollUpdatePeriod(jqXHR, status){
-        console.log("Poll Status:"+status);
+        _log("Poll Status:"+status);
 
         var latency = _pollEnd - _pollStart;
         if(latency > 0 && latency > _localLB.pollShort){
@@ -35,7 +43,7 @@ function classLiveBlog(id, rss){
             if(_localLB.pollLong < latency){
                 _localLB.pollLong = _LONGPOLL * latency;
             }
-            console.log("New Polling: short("+_localLB.pollShort+")");
+            _log("New Polling: short("+_localLB.pollShort+")");
         }
 
         // If we're still polling, reschedule for another poll.
@@ -51,7 +59,7 @@ function classLiveBlog(id, rss){
         // Record last modified time
         _localLB.lastMod = jqXHR.getResponseHeader('Last-Modified');
 
-        _pollEnd = Date.now();
+        _pollEnd = +new Date;
 
         $xml.find("item").each(
             function() {
@@ -63,16 +71,26 @@ function classLiveBlog(id, rss){
                     description: $this.find("description").text(),
                     pubDate: $this.find("pubDate").text(),
                     author: $this.find("author").text(),
-                    content: $this.find("encoded").text()
+                    content: $this.find("content\\:encoded").text(),
                 },
+                newDateContainer = $('<div style="float:right; font-weight:bold;"/>')
+                    .append(item.pubDate);
+
+                if(0 >= item.content.length){
+                    // Google Chrome and Safari seem to prefer this. 
+                    // XML tag is <content:encoded>
+                    item.content = $this.find("encoded").text()
+                }
+
+                var newContentContainer = $('<div style="margin-left:20px; margin-bottom:0px; margin-top:5px; width:580px"/>')
+                    .append(item.content),
                 newItemContainer = $("<div/>")
                     .attr("id", item.guid)
                     .hide()
-                    .append("<h3>"+item.title+"</h3>")
-                    .append($("<p/>"))
-                    .append(item.content);
+                    .append(newDateContainer, newContentContainer);
 
-                if( ! _localLB.containsId(item.guid)) {
+                // Only add the item if it has a valid guid.
+                if( item.guid && item.guid.length && ! _localLB.containsId(item.guid)) {
                     newItemContainer.insertAfter(lastItemId);
                     lastItemId = _localLB.escapeId(item.guid);
                     newItemContainer.show("slow");
@@ -82,8 +100,8 @@ function classLiveBlog(id, rss){
     }
 
     function _pollError(data, textStatus, errorThrown){
-        _pollEnd = Date.now();
-        console.warn("Poll Error: "+textStatus);
+        _pollEnd = +new Date;
+        _log("Poll Error: "+textStatus);
     }
 
     // Check to see if this id is already in the document/page.
@@ -106,12 +124,15 @@ function classLiveBlog(id, rss){
     }
     
     // Get the live blog data once. Loop if we've started polling.
+    // Skip if-modified check if we *think* we've never loaded before.
+    // Trick: reloading the page doesn't purge the XML from cache, 
+    //        but it does clear lastMod.
     this.poll = function(){
-        _pollStart = Date.now();
+        _pollStart = +new Date;
         $.ajax({
             url: _localLB.rssXml,
             dataType: "xml",
-            ifModified: true,
+            ifModified: (_localLB.lastMod)?true:false,
             success: _pollSuccess,
             error: _pollError,
             complete: _pollUpdatePeriod
@@ -127,7 +148,7 @@ function classLiveBlog(id, rss){
             _pollPending.clear();
             _pollPending = undefined;
         }
-        console.log("Polling stopped.");
+        _log("Polling stopped.");
     };
 
     this.pollingStart = function(interval) {
@@ -138,7 +159,7 @@ function classLiveBlog(id, rss){
 
         _localLB.pollingStop();
         _pollPending = new LBTimeout(_localLB.poll, _localLB.pollShort);
-        console.log("Polling started: " + _pollPending.id);
+        _log("Polling started: " + _pollPending.id);
     }
 
     this.pollingToggle = function() {

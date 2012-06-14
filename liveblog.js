@@ -89,7 +89,8 @@ function classLiveBlog(id, rss){
                     .hide()
                     .append(newDateContainer, newContentContainer);
 
-                if( ! _localLB.containsId(item.guid)) {
+                // Only add the item if it has a valid guid.
+                if( item.guid && item.guid.length && ! _localLB.containsId(item.guid)) {
                     newItemContainer.insertAfter(lastItemId);
                     lastItemId = _localLB.escapeId(item.guid);
                     newItemContainer.show("slow");
